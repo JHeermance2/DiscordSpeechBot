@@ -368,6 +368,7 @@ function process_commands_query(query, mapKey, userid) {
         return;
 
     let out = null;
+    val.text_Channel.send(query);
 
     const regex = /^bot ([a-zA-Z]+)(.+?)?$/;
     const m = query.toLowerCase().match(regex);
