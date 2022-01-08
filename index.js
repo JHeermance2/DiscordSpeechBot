@@ -315,7 +315,7 @@ function speak_impl(voice_Connection, mapKey) {
                for (key in out)
                {
                     val.text_Channel.send(key + out[key]);
-                    val.text_Channel.send(user.username + ':' + out[key])
+                    //val.text_Channel.send(user.username + ':' + out[key])
                }
             } 
             catch (e) {
