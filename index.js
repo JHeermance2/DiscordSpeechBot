@@ -320,9 +320,8 @@ function speak_impl(voice_Connection, mapKey) {
 function process_commands_query(query, mapKey, userid) {
     console.log("process_command_query");
 
-    let out = query;
-    console.log(query);
-    msg.reply(query);
+    let out = null;
+
 
     const regex = /^bot ([a-zA-Z]+)(.+?)?$/;
     const m = query.toLowerCase().match(regex);
@@ -340,12 +339,11 @@ function process_commands_query(query, mapKey, userid) {
         if (out == null)
             out = "I didn't catch that...";
     }
-    if (out != null && out.length) {
-        out = '<@' + userid + '>, ' + out;
-        console.log('text_Channel out: ' + out)
-        const val = guildMap.get(mapKey);
-        val.text_Channel.send(out)
-    }
+    
+    out = '<@' + userid + '>, ' + out;
+    console.log('text_Channel out: ' + out)
+    const val = guildMap.get(mapKey);
+    val.text_Channel.send(out);
 }
 
 async function music_message(message, mapKey) {
