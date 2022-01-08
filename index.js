@@ -308,7 +308,7 @@ function speak_impl(voice_Connection, mapKey) {
             try {
                 let new_buffer = await convert_audio(buffer)
                 let out = await transcribe(new_buffer);
-                console.log("I heard" + out)
+                console.log("I heard: " + out)
                 if (out != null)
                     process_commands_query(out, mapKey, user.id);
             } catch (e) {
@@ -324,25 +324,10 @@ function process_commands_query(query, mapKey, userid) {
 
     let out = query;
 
-    const regex = /^bot ([a-zA-Z]+)(.+?)?$/;
-    const m = query.toLowerCase().match(regex);
-    if (m && m.length) {
-        const cmd = (m[1] || '').trim();
-        const args = (m[2] || '').trim();
-
-        switch (cmd) {
-            case 'help':
-                out = _CMD_HELP;
-                break;
-            case 'hello':
-                out = 'hello back =)'
-                break;
-        }
-    }
     if (out == null) {
-        out = '<bad command: ' + query + '>';
+        out = 'bad command: ' + query + '>';
     }
-    if (out != null && out.length) {
+    else if (out != null && out.length) {
     // out = '<@' + userid + '>, ' + out;
     console.log('text_Channel out: ' + out)
     const val = guildMap.get(mapKey);
