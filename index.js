@@ -340,7 +340,7 @@ function process_commands_query(query, mapKey, userid) {
     //         out = "I didn't catch that...";
     // }
     
-    let out = userid + ': ' + query.text;
+    let out = userid + ': ' + query;
     console.log('text_Channel out: ' + out)
     const val = guildMap.get(mapKey);
     val.text_Channel.send(out);
@@ -421,7 +421,7 @@ async function transcribe_witai(buffer) {
         const contenttype = "audio/raw;encoding=signed-integer;bits=16;rate=48k;endian=little"
         const output = await extractSpeechIntent(WITAPIKEY, stream, contenttype)
         witAI_lastcallTS = Math.floor(new Date());
-        console.log(output.text)
+        console.log(output)
         stream.destroy()
 
         if (output && '_text' in output && output._text.length) {
