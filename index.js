@@ -311,8 +311,10 @@ function speak_impl(voice_Connection, mapKey) {
                 console.log(out)
                 console.log(await transcribe(new_buffer));
                 console.log('Transcribing audio, send to processing.');
-                process_commands_query(out, mapKey, user.id);
-            } catch (e) {
+               // process_commands_query(out, mapKey, user.id);
+                val.text_Channel.send('<@' + userid + '> :' + out)
+            } 
+            catch (e) {
                 console.log('tmpraw rename: ' + e)
             }
         })
