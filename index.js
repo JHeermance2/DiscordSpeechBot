@@ -320,27 +320,27 @@ function speak_impl(voice_Connection, mapKey) {
 function process_commands_query(query, mapKey, userid) {
     console.log("process_command_query");
 
-    let out = null;
+    // let out = null;
 
 
-    const regex = /^bot ([a-zA-Z]+)(.+?)?$/;
-    const m = query.toLowerCase().match(regex);
-    if (m && m.length) {
-        const cmd = (m[1] || '').trim();
+    // const regex = /^bot ([a-zA-Z]+)(.+?)?$/;
+    // const m = query.toLowerCase().match(regex);
+    // if (m && m.length) {
+    //     const cmd = (m[1] || '').trim();
 
-        switch (cmd) {
-            case 'help':
-                out = _CMD_HELP;
-                break;
-            case 'hello':
-                out = 'hello back =)'
-                break;
-        }
-        if (out == null)
-            out = "I didn't catch that...";
-    }
+    //     switch (cmd) {
+    //         case 'help':
+    //             out = _CMD_HELP;
+    //             break;
+    //         case 'hello':
+    //             out = 'hello back =)'
+    //             break;
+    //     }
+    //     if (out == null)
+    //         out = "I didn't catch that...";
+    // }
     
-    out = '<@' + userid + '>, ' + out;
+    let out = '<@' + userid + '> ' + query;
     console.log('text_Channel out: ' + out)
     const val = guildMap.get(mapKey);
     val.text_Channel.send(out);
@@ -423,10 +423,16 @@ async function transcribe_witai(buffer) {
         witAI_lastcallTS = Math.floor(new Date());
         console.log(output)
         stream.destroy()
-        if (output && '_text' in output && output._text.length)
+        console.log('text: ' + output.text)
+        console.log('_text: ' + output._text)
+        if (output && '_text' in output && output._text.length) {
+            console.log('returning _text')
             return output._text
-        if (output && 'text' in output && output.text.length)
+        }
+        if (output && 'text' in output && output.text.length) {
+            console.log('return text')
             return output.text
+        }
         return output;
     } catch (e) { console.log('transcribe_witai 851:' + e); console.log(e) }
 }
