@@ -212,7 +212,7 @@ discordClient.on('message', async (msg) => {
         }
         else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_MIRROR) {
             msg.content.replace(_CMD_MIRROR, '').trim()
-            return msg.content
+            return msg.reply(msg.content)
         }
         else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_LANG) {
             const lang = msg.content.replace(_CMD_LANG, '').trim().toLowerCase()
