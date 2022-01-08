@@ -367,14 +367,14 @@ function process_commands_query(query, mapKey, userid) {
     if (!query || !query.length)
         return;
 
-    let out = null;
-    val.text_Channel.send(query);
-
+    let out = query;
+    console.log(out);
+    val.text_Channel.send(out);
+    
     const regex = /^bot ([a-zA-Z]+)(.+?)?$/;
     const m = query.toLowerCase().match(regex);
     if (m && m.length) {
         const cmd = (m[1]||'').trim();
-        const args = (m[2]||'').trim();
 
         switch(cmd) {
             case 'help':
@@ -385,7 +385,7 @@ function process_commands_query(query, mapKey, userid) {
                 break;            
         }
         if (out == null)
-            out = '<bad command: ' + query + '>';
+            out = "I didn't catch that...";
     }
     if (out != null && out.length) {
         out = '<@' + userid + '>, ' + out;
