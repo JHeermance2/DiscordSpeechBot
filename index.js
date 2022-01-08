@@ -171,9 +171,6 @@ const _CMD_DEBUG = PREFIX + 'debug';
 const _CMD_TEST = PREFIX + 'hello';
 const _CMD_LANG = PREFIX + 'lang';
 
-const EMOJI_GREEN_CIRCLE = '🟢'
-const EMOJI_RED_CIRCLE = '🔴'
-
 const guildMap = new Map();
 
 discordClient.on('message', async (msg) => {
@@ -269,6 +266,8 @@ async function connect(msg, mapKey) {
             'debug': false,
         });
         speak_impl(voice_Connection, mapKey)
+        console.log("I heard" + text)
+        msg.reply("I heard" + text)
         voice_Connection.on('disconnect', async (e) => {
             if (e) console.log(e);
             guildMap.delete(mapKey);
@@ -308,8 +307,8 @@ function speak_impl(voice_Connection, mapKey) {
 
             try {
                 let new_buffer = await convert_audio(buffer)
-                let out = await transcribe(new_buffer)
-                console.log("I heard" + text)
+                let out = await transcribe(new_buffer);
+                console.log("I heard" + out)
                 if (out != null)
                     process_commands_query(out, mapKey, user.id);
             } catch (e) {
@@ -352,102 +351,7 @@ function process_commands_query(query, mapKey, userid) {
 }
 
 
-async function music_message(message, mapKey) {
-    let replymsgs = [];
-    const messes = message.content.split('\n');
-    for (let mess of messes) {
-        const args = mess.split(' ');
 
-
-        if (args[0] == _CMD_PLAY && args.length) {
-            const qry = args.slice(1).join(' ');
-            if (qry == 'favorites') {
-                // play guild's favorites
-                if (mapKey in GUILD_FAVORITES) {
-                    let arr = GUILD_FAVORITES[mapKey];
-                    if (arr.length) {
-                        for (let item of arr) {
-                            addToQueue(item, mapKey)
-                        }
-                        message.react(EMOJI_GREEN_CIRCLE)
-                    } else {
-                        message.channel.send('No favorites yet.')
-                    }
-                } else {
-                    message.channel.send('No favorites yet.')
-                }
-            }
-            else if (isSpotify(qry)) {
-                try {
-                    const arr = await spotify_tracks_from_playlist(qry);
-                    console.log(arr.length + ' spotify items from playlist')
-                    for (let item of arr)
-                        addToQueue(item, mapKey);
-                    message.react(EMOJI_GREEN_CIRCLE)
-                } catch (e) {
-                    console.log('music_message 464:' + e)
-                    message.channel.send('Failed processing spotify link: ' + qry);
-                }
-            } else {
-
-                if (isYoutube(qry) && isYoutubePlaylist(qry)) {
-                    try {
-                        const arr = await youtube_tracks_from_playlist(qry);
-                        for (let item of arr)
-                            addToQueue(item, mapKey)
-                        message.react(EMOJI_GREEN_CIRCLE)
-                    } catch (e) {
-                        console.log('music_message 476:' + e)
-                        message.channel.send('Failed to process playlist: ' + qry);
-                    }
-                } else {
-                    try {
-                        addToQueue(qry, mapKey);
-                        message.react(EMOJI_GREEN_CIRCLE)
-                    } catch (e) {
-                        console.log('music_message 484:' + e)
-                        message.channel.send('Failed to find video for (try again): ' + qry);
-                    }
-                }
-            }
-        }
-
-    }
-}
-
-let GUILD_FAVORITES = {};
-const GUILD_FAVORITES_FILE = './data/guild_favorites.json';
-setInterval(() => {
-    var json = JSON.stringify(GUILD_FAVORITES);
-    fs.writeFile(GUILD_FAVORITES_FILE, json, 'utf8', (err) => {
-        if (err) return console.log('GUILD_FAVORITES_FILE:' + err);
-    });
-}, 1000);
-
-function message_chunking(msg, MAXL) {
-    const msgs = msg.split('\n');
-    const chunks = [];
-
-    let outmsg = '';
-    while (msgs.length) {
-        let a = msgs.shift() + '\n';
-        if (a.length > MAXL) {
-            console.log(a)
-            throw new Error('error#418: max single msg limit');
-        }
-
-        if ((outmsg + a + 6).length <= MAXL) {
-            outmsg += a;
-        } else {
-            chunks.push('```' + outmsg + '```')
-            outmsg = ''
-        }
-    }
-    if (outmsg.length) {
-        chunks.push('```' + outmsg + '```')
-    }
-    return chunks;
-}
 
 //////////////////////////////////////////
 //////////////// SPEECH //////////////////
