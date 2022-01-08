@@ -421,7 +421,7 @@ async function transcribe_witai(buffer) {
         const contenttype = "audio/raw;encoding=signed-integer;bits=16;rate=48k;endian=little"
         const output = await extractSpeechIntent(WITAPIKEY, stream, contenttype)
         witAI_lastcallTS = Math.floor(new Date());
-        console.log(output.text)s
+        console.log(output.text)
         stream.destroy()
 
         if (output && '_text' in output && output._text.length) {
