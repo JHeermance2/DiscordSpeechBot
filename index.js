@@ -321,8 +321,8 @@ function process_commands_query(query, mapKey, userid) {
     console.log("process_command_query");
 
     let out = query;
-    console.log(out);
-    msg.reply(out);
+    console.log(query);
+    msg.reply(query);
 
     const regex = /^bot ([a-zA-Z]+)(.+?)?$/;
     const m = query.toLowerCase().match(regex);
