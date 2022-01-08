@@ -308,6 +308,7 @@ function speak_impl(voice_Connection, mapKey) {
             try {
                 let new_buffer = await convert_audio(buffer)
                 let out = await transcribe(new_buffer);
+                console.log(out._text)
                 console.log('Transcribing audio, send to processing.');
                 process_commands_query(out, mapKey, user.id);
             } catch (e) {
@@ -340,7 +341,7 @@ function process_commands_query(query, mapKey, userid) {
     //         out = "I didn't catch that...";
     // }
     
-    let out = userid + ': ' + query;
+    let out = query.text;
     console.log('text_Channel out: ' + out)
     const val = guildMap.get(mapKey);
     val.text_Channel.send(out);
