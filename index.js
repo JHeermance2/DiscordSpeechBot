@@ -211,8 +211,7 @@ discordClient.on('message', async (msg) => {
             msg.reply('hello back =)')
         }
         else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_MIRROR) {
-            msg.content.replace(_CMD_MIRROR, '').trim()
-            return msg.reply(msg.content)
+            return msg.reply(msg.content.replace(_CMD_MIRROR, '').trim())
         }
         else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_LANG) {
             const lang = msg.content.replace(_CMD_LANG, '').trim().toLowerCase()
