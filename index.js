@@ -283,34 +283,13 @@ discordClient.on('message', async (msg) => {
 function getHelpString() {
     let out = '**VOICE COMMANDS:**\n'
         out += '```'
-        out += 'music help\n'
-        out += 'music play [random, favorites, <genre> or query]\n'
-        out += 'music skip\n'
-        out += 'music pause/resume\n'
-        out += 'music shuffle\n'
-        out += 'music genres\n'
-        out += 'music set favorite\n'
-        out += 'music favorites\n'
-        out += 'music list\n'
-        out += 'music clear list\n';
+        out += 'music help\n';
         out += '```'
 
         out += '**TEXT COMMANDS:**\n'
         out += '```'
         out += _CMD_HELP + '\n'
-        out += _CMD_JOIN + '/' + _CMD_LEAVE + '\n'
-        out += _CMD_PLAY + ' [query]\n'
-        out += _CMD_GENRE + ' [name]\n'
-        out += _CMD_RANDOM + '\n'
-        out += _CMD_PAUSE + '/' + _CMD_RESUME + '\n'
-        out += _CMD_SKIP + '\n'
-        out += _CMD_SHUFFLE + '\n'
-        out += _CMD_FAVORITE + '\n'
-        out += _CMD_UNFAVORITE + ' [name]\n'
-        out += _CMD_FAVORITES + '\n'
-        out += _CMD_GENRES + '\n'
-        out += _CMD_QUEUE + '\n';
-        out += _CMD_CLEAR + '\n';
+        out += _CMD_JOIN + '/' + _CMD_LEAVE + '\n';
         out += '```'
     return out;
 }
