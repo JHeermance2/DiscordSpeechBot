@@ -359,8 +359,6 @@ function speak_impl(voice_Connection, mapKey) {
             } catch (e) {
                 console.log('tmpraw rename: ' + e)
             }
-
-
         })
     })
 }
@@ -371,7 +369,7 @@ function process_commands_query(query, mapKey, userid) {
 
     let out = null;
 
-    const regex = /^music ([a-zA-Z]+)(.+?)?$/;
+    const regex = /^bot ([a-zA-Z]+)(.+?)?$/;
     const m = query.toLowerCase().match(regex);
     if (m && m.length) {
         const cmd = (m[1]||'').trim();
@@ -381,69 +379,15 @@ function process_commands_query(query, mapKey, userid) {
             case 'help':
                 out = _CMD_HELP;
                 break;
-            case 'skip':
-                out = _CMD_SKIP;
-                break;
-            case 'shuffle':
-                out = _CMD_SHUFFLE;
-                break;
-            case 'genres':
-                out = _CMD_GENRES;
-                break;
-            case 'pause':
-                out = _CMD_PAUSE;
-                break;
-            case 'resume':
-                out = _CMD_RESUME;
-                break;
-            case 'clear':
-                if (args == 'list')
-                    out = _CMD_CLEAR;
-                break;
-            case 'list':
-                out = _CMD_QUEUE;
-                break;
             case 'hello':
                 out = 'hello back =)'
-                break;
-            case 'favorites':
-                out = _CMD_FAVORITES;
-                break;
-            case 'set':
-                switch (args) {
-                    case 'favorite':
-                    case 'favorites':
-                        out = _CMD_FAVORITE;
-                        break;
-                }
-                break;
-            case 'play':
-            case 'player':
-                switch(args) {
-                    case 'random':
-                        out = _CMD_RANDOM;
-                        break;
-                    case 'favorite':
-                    case 'favorites':
-                        out = _CMD_PLAY + ' ' + 'favorites';
-                        break;
-                    default:
-                        for (let k of Object.keys(GENRES)) {
-                            if (GENRES[k].includes(args)) {
-                                out = _CMD_GENRE + ' ' + k;
-                            }
-                        }
-                        if (out == null) {
-                            out = _CMD_PLAY + ' ' + args;
-                        }
-                }
-                break;
+                break;            
         }
         if (out == null)
             out = '<bad command: ' + query + '>';
     }
     if (out != null && out.length) {
-        // out = '<@' + userid + '>, ' + out;
+        out = '<@' + userid + '>, ' + out;
         console.log('text_Channel out: ' + out)
         const val = guildMap.get(mapKey);
         val.text_Channel.send(out)
@@ -456,120 +400,7 @@ async function music_message(message, mapKey) {
     for (let mess of messes) {
         const args = mess.split(' ');
 
-        if (args[0] == _CMD_PLAY && args.length) {
-            const qry = args.slice(1).join(' ');
-            if (qry == 'favorites') {
-                // play guild's favorites
-                if (mapKey in GUILD_FAVORITES) {
-                    let arr = GUILD_FAVORITES[mapKey];
-                    if (arr.length) {
-                        for (let item of arr)     {
-                            addToQueue(item, mapKey)
-                        }
-                        message.react(EMOJI_GREEN_CIRCLE)
-                    } else {
-                        message.channel.send('No favorites yet.')
-                    }
-                } else {
-                    message.channel.send('No favorites yet.')
-                }
-            }
-            else if (isSpotify(qry)) {
-                try {
-                    const arr = await spotify_tracks_from_playlist(qry);
-                    console.log(arr.length + ' spotify items from playlist')
-                    for (let item of arr)
-                        addToQueue(item, mapKey);
-                    message.react(EMOJI_GREEN_CIRCLE)
-                } catch(e) {
-                    console.log('music_message 464:' + e)
-                    message.channel.send('Failed processing spotify link: ' + qry);
-                }
-            } else {
-
-                if (isYoutube(qry) && isYoutubePlaylist(qry)) {
-                    try {
-                        const arr = await youtube_tracks_from_playlist(qry);
-                        for (let item of arr)
-                            addToQueue(item, mapKey)
-                        message.react(EMOJI_GREEN_CIRCLE)
-                    } catch (e) {
-                        console.log('music_message 476:' + e)
-                        message.channel.send('Failed to process playlist: ' + qry);
-                    }
-                } else {
-                    try {
-                        addToQueue(qry, mapKey);
-                        message.react(EMOJI_GREEN_CIRCLE)
-                    } catch (e) {
-                        console.log('music_message 484:' + e)
-                        message.channel.send('Failed to find video for (try again): ' + qry);
-                    }
-                }
-            }
-        } else if (args[0] == _CMD_SKIP) {
-
-            skipMusic(mapKey, ()=>{
-                message.react(EMOJI_GREEN_CIRCLE)
-            }, (msg)=>{
-                if (msg && msg.length) message.channel.send(msg);
-            })
-
-        } else if (args[0] == _CMD_PAUSE) {
-
-            pauseMusic(mapKey, ()=>{
-                message.react(EMOJI_GREEN_CIRCLE)
-            }, (msg)=>{
-                if (msg && msg.length) message.channel.send(msg);
-            })
-
-        } else if (args[0] == _CMD_RESUME) {
-
-            resumeMusic(mapKey, ()=>{
-                message.react(EMOJI_GREEN_CIRCLE)
-            }, (msg)=>{
-                if (msg && msg.length) message.channel.send(msg);
-            })
-
-        } else if (args[0] == _CMD_SHUFFLE) {
-
-            shuffleMusic(mapKey, ()=>{
-                message.react(EMOJI_GREEN_CIRCLE)
-            }, (msg)=>{
-                if (msg && msg.length) message.channel.send(msg);
-            })
-
-        } else if (args[0] == _CMD_CLEAR) {
-
-            clearQueue(mapKey, ()=>{
-                message.react(EMOJI_GREEN_CIRCLE)
-            }, (msg)=>{
-                if (msg && msg.length) message.channel.send(msg);
-            })
-
-        } else if (args[0] == _CMD_QUEUE) {
-
-            const chunks = message_chunking(getQueueString(mapKey), DISCORD_MSG_LIMIT);
-            for (let chunk of chunks) {
-                console.log(chunk.length)
-                message.channel.send(chunk);
-            }
-            message.react(EMOJI_GREEN_CIRCLE)
-
-        } else if (args[0] == _CMD_RANDOM) {
-
-            let arr = await spotify_new_releases();
-            if (arr.length) {
-                arr = shuffle(arr);
-                // let item = arr[Math.floor(Math.random() * arr.length)];
-                for (let item of arr)
-                    addToQueue(item, mapKey);
-                message.react(EMOJI_GREEN_CIRCLE)
-            } else {
-                message.channel.send('no results for random');
-            }
-
-        } else if (args[0] == _CMD_GENRES) {
+       if (args[0] == _CMD_GENRES) {
 
             let out = "------------ genres ------------\n";
             for (let g of Object.keys(GENRES)) {
@@ -580,49 +411,7 @@ async function music_message(message, mapKey) {
             for (let chunk of chunks)
                 message.channel.send(chunk);
 
-        } else if (args[0] == _CMD_GENRE) {
-
-            const genre = args.slice(1).join(' ').trim();
-            let arr = await spotify_recommended(genre);
-            if (arr.length) {
-                arr = shuffle(arr);
-                // let item = arr[Math.floor(Math.random() * arr.length)];
-                for (let item of arr)
-                    addToQueue(item, mapKey);
-                message.react(EMOJI_GREEN_CIRCLE)
-            } else {
-                message.channel.send('no results for genre: ' + genre);
-            }
-
-        } else if (args[0] == _CMD_FAVORITES) {
-            const favs = getFavoritesString(mapKey);
-            if (!(mapKey in GUILD_FAVORITES) || !GUILD_FAVORITES[mapKey].length)
-                message.channel.send('No favorites to play.')
-            else {
-                const chunks = message_chunking(favs, DISCORD_MSG_LIMIT);
-                for (let chunk of chunks)
-                    message.channel.send(chunk);
-                message.react(EMOJI_GREEN_CIRCLE)
-            }
-
-        } else if (args[0] == _CMD_FAVORITE) {
-
-            setAsFavorite(mapKey, ()=>{
-                message.react(EMOJI_GREEN_CIRCLE)
-            }, (msg)=> {
-                if (msg && msg.length) message.channel.send(msg);
-            })
-
-        }  else if (args[0] == _CMD_UNFAVORITE) {
-
-            const qry = args.slice(1).join(' ');
-            unFavorite(qry, mapKey, ()=>{
-                message.react(EMOJI_GREEN_CIRCLE)
-            }, (msg)=>{
-                if (msg && msg.length) message.channel.send(msg);
-            })
-
-        } 
+        }
 
     }
     
@@ -634,70 +423,8 @@ async function music_message(message, mapKey) {
     });
 }
 
-let GUILD_FAVORITES = {};
-const GUILD_FAVORITES_FILE = './data/guild_favorites.json';
-setInterval(()=>{
-    var json = JSON.stringify(GUILD_FAVORITES);
-    fs.writeFile(GUILD_FAVORITES_FILE, json, 'utf8', (err)=>{
-        if (err) return console.log('GUILD_FAVORITES_FILE:' + err);
-    });
-},1000);
-function load_guild_favorites() {
-    if (fs.existsSync(GUILD_FAVORITES_FILE)) {
-        const data = fs.readFileSync(GUILD_FAVORITES_FILE, 'utf8');
-        GUILD_FAVORITES = JSON.parse(data);
-    }
-}
-load_guild_favorites();
 
-function setAsFavorite(mapKey, cbok, cberr) {
-    let val = guildMap.get(mapKey);
-    if (!val.currentPlayingTitle || !val.currentPlayingQuery)
-        cberr('Nothing playing at the moment.')
-    else {
-        if (!(mapKey in GUILD_FAVORITES)) {
-            GUILD_FAVORITES[mapKey] = [];
-        }
-        if (!GUILD_FAVORITES[mapKey].includes(val.currentPlayingQuery))
-            GUILD_FAVORITES[mapKey].push( val.currentPlayingQuery )
-        cbok()
-    }
-}
-function unFavorite(qry, mapKey, cbok, cberr) {
-    let val = guildMap.get(mapKey);
-    if (!qry || !qry.length)
-        cberr('Invalid query.');
-    else {
-        if (!(mapKey in GUILD_FAVORITES)) {
-            cberr('No favorites.');
-        } else {
-            if (GUILD_FAVORITES[mapKey].includes(qry)) {
-                GUILD_FAVORITES[mapKey] = GUILD_FAVORITES[mapKey].filter(e => e !== qry); 
-                cbok()
-            } else {
-                cberr('Favorite not found.');
-            }
-        }
-    }
-}
 
-function getFavoritesString(mapKey) {
-    let out = "------------ favorites ------------\n";
-    if (mapKey in GUILD_FAVORITES) {
-        let arr = GUILD_FAVORITES[mapKey];
-        if (arr.length) {
-            for (let item of arr)     {
-                out += item + '\n';
-            }
-        } else {
-            out += '(empty)\n'
-        }
-    } else {
-        out += '(empty)\n'
-    }
-    out += "-----------------------------------\n";
-    return out;
-}
 
 function message_chunking(msg, MAXL) {
     const msgs = msg.split('\n');
@@ -724,126 +451,6 @@ function message_chunking(msg, MAXL) {
     return chunks;
 }
 
-function getQueueString(mapKey) {
-    let val = guildMap.get(mapKey);
-    let _message = "------------ queue ------------\n";
-    if (val.currentPlayingTitle != null)
-        _message += '[X] ' + val.currentPlayingTitle + '\n';
-    for (let i = 0; i < val.musicQueue.length; i++) {
-        _message += '['+i+'] ' + val.musicQueue[i] + '\n';
-    }
-    if (val.currentPlayingTitle == null && val.musicQueue.length == 0)
-        _message += '(empty)\n'
-    _message += "---------------------------------\n";
-    return _message;
-}
-
-async function queueTryPlayNext(mapKey, cbok, cberr) {
-    try {
-        let val = guildMap.get(mapKey);
-        if (!val) {
-            console.log('mapKey: ' + mapKey + ' no longer in guildMap')
-            return
-        }
-
-        if (val.musicQueue.length == 0)
-            return;
-        if (val.currentPlayingTitle)
-            return;
-
-        const qry = val.musicQueue.shift();
-        const data = await getYoutubeVideoData(qry)
-        const ytid = data.id;
-        const title = data.title;
-
-        // lag or stuttering? try this first!
-        // https://groovy.zendesk.com/hc/en-us/articles/360023031772-Laggy-Glitchy-Distorted-No-Audio
-        val.currentPlayingTitle = title;
-        val.currentPlayingQuery = qry;
-        val.musicYTStream = ytdl('https://www.youtube.com/watch?v=' + ytid, {
-            filter: 'audioonly',
-            quality: 'highestaudio',
-            highWaterMark: 1024*1024*10, // 10mb
-        }, {highWaterMark: 1})
-        val.musicDispatcher = val.voice_Connection.play(val.musicYTStream);
-        val.musicDispatcher.on('finish', () => {
-            val.currentPlayingTitle = val.currentPlayingQuery = null;
-            queueTryPlayNext(mapKey, cbok, cberr);
-        });
-        val.musicDispatcher.on('error', (err) => {
-            if (err) console.log('musicDispatcher error: ' + err);
-            console.log(err)
-            cberr('Error playing <'+title+'>, try again?')
-            val.currentPlayingTitle = val.currentPlayingQuery = null;
-            queueTryPlayNext(mapKey, cbok, cberr);
-        });
-        val.musicDispatcher.on('start', () => {
-            cbok(title)
-        });
-        
-    } catch (e) {
-        console.log('queueTryPlayNext: ' + e)
-        cberr('Error playing, try again?')
-        if (typeof val !== 'undefined') {
-            val.currentPlayingTitle = val.currentPlayingQuery = null;
-            if (val.musicDispatcher) val.musicDispatcher.end();
-        }
-    }
-
-}
-
-function addToQueue(title, mapKey) {
-    let val = guildMap.get(mapKey);
-    if (val.currentPlayingTitle == title || val.currentPlayingQuery == title || val.musicQueue.includes(title)) {
-        console.log('duplicate prevented: ' + title)
-    } else {
-        val.musicQueue.push(title);
-    }
-}
-
-
-function skipMusic(mapKey, cbok, cberr) {
-    let val = guildMap.get(mapKey);
-    if (!val.currentPlayingTitle) {
-        cberr('Nothing to skip');
-    } else {
-        if (val.musicDispatcher) val.musicDispatcher.end();
-        cbok()
-    }
-}
-
-function pauseMusic(mapKey, cbok, cberr) {
-    let val = guildMap.get(mapKey);
-    if (!val.currentPlayingTitle) {
-        cberr('Nothing to pause');
-    } else {
-        if (val.musicDispatcher) val.musicDispatcher.pause();
-        cbok()
-    }
-}
-
-function resumeMusic(mapKey, cbok, cberr) {
-    let val = guildMap.get(mapKey);
-    if (!val.currentPlayingTitle) {
-        cberr('Nothing to resume');
-    } else {
-        if (val.musicDispatcher) val.musicDispatcher.resume();
-        cbok()
-    }
-}
-
-function clearQueue(mapKey, cbok, cberr) {
-    let val = guildMap.get(mapKey);
-    val.musicQueue = [];
-    if (val.musicDispatcher) val.musicDispatcher.end();
-    cbok()
-}
-
-function shuffleMusic(mapKey, cbok, cberr) {
-    let val = guildMap.get(mapKey);
-    val.musicQueue = shuffle(val.musicQueue);
-    cbok()
-}
 
 
 //////////////////////////////////////////
@@ -858,6 +465,7 @@ async function transcribe(buffer) {
 // WitAI
 let witAI_lastcallTS = null;
 const witClient = require('node-witai-speech');
+
 async function transcribe_witai(buffer) {
     try {
         // ensure we do not send more than one request per second
