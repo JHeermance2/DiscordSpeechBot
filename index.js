@@ -311,7 +311,7 @@ function speak_impl(voice_Connection, mapKey) {
                 let out = await transcribe(new_buffer);
                // console.log('Transcribing audio, send to processing.');
                // process_commands_query(out, mapKey, user.id);
-                val.text_Channel.send(user.username + ':' + out.text)
+                val.text_Channel.send(user.username + ':' + out)
             } 
             catch (e) {
                 console.log('tmpraw rename: ' + e)
@@ -426,7 +426,7 @@ async function transcribe_witai(buffer) {
         const contenttype = "audio/raw;encoding=signed-integer;bits=16;rate=48k;endian=little"
         const output = await extractSpeechIntent(WITAPIKEY, stream, contenttype)
         witAI_lastcallTS = Math.floor(new Date());
-        console.log('transcribed output: ' + output.text)
+        console.log('transcribed output: ' + output)
         stream.destroy()
         return output;
     } 
