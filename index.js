@@ -211,7 +211,7 @@ discordClient.on('message', async (msg) => {
             msg.reply('hello back =)')
         }
         else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_MIRROR) {
-            return msg.reply(msg.content.replace(_CMD_MIRROR, '').trim())
+            msg.reply(msg.content.replace(_CMD_MIRROR, '').trim())
         }
         else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_LANG) {
             const lang = msg.content.replace(_CMD_LANG, '').trim().toLowerCase()
@@ -322,7 +322,7 @@ function process_commands_query(query, mapKey, userid) {
 
     let out = query;
     console.log(out);
-    val.text_Channel.send(out);
+    msg.reply(out);
 
     const regex = /^bot ([a-zA-Z]+)(.+?)?$/;
     const m = query.toLowerCase().match(regex);
