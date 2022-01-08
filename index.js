@@ -342,7 +342,7 @@ function process_commands_query(query, mapKey, userid) {
     //         out = "I didn't catch that...";
     // }
     
-    let out = query.text;
+    let out = query;
     console.log('text_Channel out: ' + out)
     const val = guildMap.get(mapKey);
     val.text_Channel.send(out);
@@ -402,6 +402,7 @@ let witAI_lastcallTS = null;
 const witClient = require('node-witai-speech');
 
 async function transcribe_witai(buffer) {
+    console.log('transcribe_witai');
     try {
         // ensure we do not send more than one request per second
         if (witAI_lastcallTS != null) {
@@ -412,7 +413,8 @@ async function transcribe_witai(buffer) {
                 now = Math.floor(new Date());
             }
         }
-    } catch (e) {
+    } 
+    catch (e) {
         console.log('transcription error:' + e)
     }
 
@@ -423,7 +425,7 @@ async function transcribe_witai(buffer) {
         const contenttype = "audio/raw;encoding=signed-integer;bits=16;rate=48k;endian=little"
         const output = await extractSpeechIntent(WITAPIKEY, stream, contenttype)
         witAI_lastcallTS = Math.floor(new Date());
-        console.log(output)
+        console.log('transcribed output: ' + output)
         stream.destroy()
 
         if (output && '_text' in output && output._text.length) {
@@ -435,7 +437,10 @@ async function transcribe_witai(buffer) {
             return output.text
         }
         return output;
-    } catch (e) { console.log('transcribe_witai 851:' + e); console.log(e) }
+    } 
+    catch (e) {
+        console.log('transcribe_witai 851:' + e); console.log(e) 
+    }
 }
 
 // // Google Speech API
