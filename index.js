@@ -196,15 +196,6 @@ discordClient.on('message', async (msg) => {
             } else {
                 msg.reply("Cannot leave because not connected.")
             }
-        }
-        else if (PLAY_CMDS.indexOf(msg.content.trim().toLowerCase().split('\n')[0].split(' ')[0]) >= 0) {
-            if (!msg.member.voice.channelID) {
-                msg.reply('Error: please join a voice channel first.')
-            } else {
-                if (!guildMap.has(mapKey))
-                    await connect(msg, mapKey)
-                music_message(msg, mapKey);
-            }
         } else if (msg.content.trim().toLowerCase() == _CMD_HELP) {
             msg.reply(getHelpString());
         }
