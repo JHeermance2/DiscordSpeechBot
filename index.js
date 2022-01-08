@@ -310,7 +310,7 @@ function speak_impl(voice_Connection, mapKey) {
                 let out = await transcribe(new_buffer);
                 console.log("I heard: " + out)
                 if (out != null)
-                    process_commands_query(out, mapKey, user.id);
+                    process_query(out, mapKey, user.id);
             } catch (e) {
                 console.log('tmpraw rename: ' + e)
             }
@@ -318,25 +318,21 @@ function speak_impl(voice_Connection, mapKey) {
     })
 }
 
-function process_commands_query(query, mapKey, userid) {
+function process_query(query, mapKey, userid) {
     if (!query || !query.length)
         return;
 
     let out = query;
 
     if (out == null) {
-        out = 'bad command: ' + query + '>';
+        out = 'bad command: ' + query;
     }
-    else if (out != null && out.length) {
-    // out = '<@' + userid + '>, ' + out;
+    
+    out = '<@' + userid + '>, ' + out;
     console.log('text_Channel out: ' + out)
     const val = guildMap.get(mapKey);
-    val.text_Channel.send(out)
-    }
+    val.text_Channel.send(out)    
 }
-
-
-
 
 //////////////////////////////////////////
 //////////////// SPEECH //////////////////
@@ -416,7 +412,3 @@ async function transcribe_gspeech(buffer) {
 
     } catch (e) { console.log('transcribe_gspeech 368:' + e) }
 }
-
-//////////////////////////////////////////
-//////////////////////////////////////////
-//////////////////////////////////////////
