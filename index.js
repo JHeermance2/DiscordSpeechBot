@@ -309,9 +309,9 @@ function speak_impl(voice_Connection, mapKey) {
                 let val = guildMap.get(mapKey);
                 let new_buffer = await convert_audio(buffer)
                 let out = await transcribe(new_buffer);
-                console.log('Transcribing audio, send to processing.');
+               // console.log('Transcribing audio, send to processing.');
                // process_commands_query(out, mapKey, user.id);
-                val.text_Channel.send('<@' + userid + '> :' + out.text)
+                val.text_Channel.send(user.username + ':' + out.text)
             } 
             catch (e) {
                 console.log('tmpraw rename: ' + e)
@@ -426,7 +426,7 @@ async function transcribe_witai(buffer) {
         const contenttype = "audio/raw;encoding=signed-integer;bits=16;rate=48k;endian=little"
         const output = await extractSpeechIntent(WITAPIKEY, stream, contenttype)
         witAI_lastcallTS = Math.floor(new Date());
-        console.log('transcribed output: ' + output)
+        console.log('transcribed output: ' + output.text)
         stream.destroy()
         return output;
     } 
