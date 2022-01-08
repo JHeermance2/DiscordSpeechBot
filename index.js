@@ -340,7 +340,7 @@ function process_commands_query(query, mapKey, userid) {
     //         out = "I didn't catch that...";
     // }
     
-    let out = '<@' + userid + '> ' + query;
+    let out = userid + ': ' + query.text;
     console.log('text_Channel out: ' + out)
     const val = guildMap.get(mapKey);
     val.text_Channel.send(out);
@@ -411,7 +411,7 @@ async function transcribe_witai(buffer) {
             }
         }
     } catch (e) {
-        console.log('transcribe_witai 837:' + e)
+        console.log('transcription error:' + e)
     }
 
     try {
@@ -421,10 +421,9 @@ async function transcribe_witai(buffer) {
         const contenttype = "audio/raw;encoding=signed-integer;bits=16;rate=48k;endian=little"
         const output = await extractSpeechIntent(WITAPIKEY, stream, contenttype)
         witAI_lastcallTS = Math.floor(new Date());
-        console.log(output)
+        console.log(output.text)s
         stream.destroy()
-        console.log('text: ' + output.text)
-        console.log('_text: ' + output._text)
+
         if (output && '_text' in output && output._text.length) {
             console.log('returning _text')
             return output._text
@@ -437,37 +436,37 @@ async function transcribe_witai(buffer) {
     } catch (e) { console.log('transcribe_witai 851:' + e); console.log(e) }
 }
 
-// Google Speech API
-// https://cloud.google.com/docs/authentication/production
-const gspeech = require('@google-cloud/speech');
-const gspeechclient = new gspeech.SpeechClient({
-    projectId: 'discordbot',
-    keyFilename: 'gspeech_key.json'
-});
+// // Google Speech API
+// // https://cloud.google.com/docs/authentication/production
+// const gspeech = require('@google-cloud/speech');
+// const gspeechclient = new gspeech.SpeechClient({
+//     projectId: 'discordbot',
+//     keyFilename: 'gspeech_key.json'
+// });
 
-async function transcribe_gspeech(buffer) {
-    try {
-        console.log('transcribe_gspeech')
-        const bytes = buffer.toString('base64');
-        const audio = {
-            content: bytes,
-        };
-        const config = {
-            encoding: 'LINEAR16',
-            sampleRateHertz: 48000,
-            languageCode: 'en-US',  // https://cloud.google.com/speech-to-text/docs/languages
-        };
-        const request = {
-            audio: audio,
-            config: config,
-        };
+// async function transcribe_gspeech(buffer) {
+//     try {
+//         console.log('transcribe_gspeech')
+//         const bytes = buffer.toString('base64');
+//         const audio = {
+//             content: bytes,
+//         };
+//         const config = {
+//             encoding: 'LINEAR16',
+//             sampleRateHertz: 48000,
+//             languageCode: 'en-US',  // https://cloud.google.com/speech-to-text/docs/languages
+//         };
+//         const request = {
+//             audio: audio,
+//             config: config,
+//         };
 
-        const [response] = await gspeechclient.recognize(request);
-        const transcription = response.results
-            .map(result => result.alternatives[0].transcript)
-            .join('\n');
-        console.log(`gspeech: ${transcription}`);
-        return transcription;
+//         const [response] = await gspeechclient.recognize(request);
+//         const transcription = response.results
+//             .map(result => result.alternatives[0].transcript)
+//             .join('\n');
+//         console.log(`gspeech: ${transcription}`);
+//         return transcription;
 
-    } catch (e) { console.log('transcribe_gspeech 368:' + e) }
-}
+//     } catch (e) { console.log('transcribe_gspeech 368:' + e) }
+// }
