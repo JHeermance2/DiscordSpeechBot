@@ -306,12 +306,12 @@ function speak_impl(voice_Connection, mapKey) {
             }
 
             try {
+                let val = guildMap.get(mapKey);
                 let new_buffer = await convert_audio(buffer)
                 let out = await transcribe(new_buffer);
-                console.log(await transcribe(new_buffer));
                 console.log('Transcribing audio, send to processing.');
                // process_commands_query(out, mapKey, user.id);
-                val.text_Channel.send('<@' + userid + '> :' + out)
+                val.text_Channel.send('<@' + userid + '> :' + out.text)
             } 
             catch (e) {
                 console.log('tmpraw rename: ' + e)
