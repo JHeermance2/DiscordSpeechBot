@@ -312,9 +312,10 @@ function speak_impl(voice_Connection, mapKey) {
                // console.log('Transcribing audio, send to processing.');
                // process_commands_query(out, mapKey, user.id);
 
-               for (key in out)
+               for (var key in out)
                {
-                    val.text_Channel.send("key: " + key + '\n' + "out: " +  out[key]);
+                   var value = out[key]
+                    val.text_Channel.send("key: " + key + '\n' + "out: " +  value);
                     //val.text_Channel.send(user.username + ':' + out[key])
                }
             } 
