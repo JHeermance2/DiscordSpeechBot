@@ -318,6 +318,7 @@ function speak_impl(voice_Connection, mapKey) {
                     //val.text_Channel.send("key: " + key + '\n' + "out: " +  value);
                 }
                 var transcribed_text = out["text"];
+                console.log(transcribed_text)
                 val.text_Channel.send(user.username + ': ' + transcribed_text)
                
             } 
@@ -434,7 +435,7 @@ async function transcribe_witai(buffer) {
         const contenttype = "audio/raw;encoding=signed-integer;bits=16;rate=48k;endian=little"
         const output = await extractSpeechIntent(WITAPIKEY, stream, contenttype)
         witAI_lastcallTS = Math.floor(new Date());
-        console.log('transcribed output: ' + output)
+        //console.log('transcribed output: ' + output.text)f
         stream.destroy()
         return output;
     } 
