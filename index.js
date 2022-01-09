@@ -235,11 +235,17 @@ discordClient.on('message', async (msg) => {
 })
 
 function getHelpString() {
-    let out = '**VOICE COMMANDS:**\n'
+    let out = 'Thanks for checking out the Speech-to-Text bot!\n'
+    out += 'To use the bot: \n'
+    out += '- Enter a voice channel on the server\n'
+    out += '- Switch to the text channel you would like to record your voice in\n'
+    out += '- Be patient with me! Rich wrote me in less than a day in a language he had never used before, so cut the guy some slack!\n'  
+    out += '- The more you use me, the better my results should be. I am designed to learn and better understand you the more I hear!\n'
+    out += '- If you do find a bug, just let Rich know, and he will do his best to fix it :) \n\n'
+    out += '**VOICE COMMANDS:**\n'
     out += '```'
-    out += 'music help\n';
+    out += 'bot help\n';
     out += '```'
-
     out += '**TEXT COMMANDS:**\n'
     out += '```'
     out += _CMD_HELP + '\n'
