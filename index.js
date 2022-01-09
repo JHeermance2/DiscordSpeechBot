@@ -318,7 +318,7 @@ function speak_impl(voice_Connection, mapKey) {
                     //val.text_Channel.send("key: " + key + '\n' + "out: " +  value);
                 }
                 var transcribed_text = out;
-                console.log(transcribed_text)
+                console.log('out: ' + transcribed_text)
                 val.text_Channel.send(user.username + ': ' + transcribed_text)
                
             } 
