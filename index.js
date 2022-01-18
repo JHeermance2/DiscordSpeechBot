@@ -20,7 +20,6 @@ const util = require('util');
 const path = require('path');
 const request = require('request');
 const { Readable } = require('stream');
-const Heroku = require('heroku-client')
 
 //////////////////////////////////////////
 ///////////////// VARIA //////////////////
@@ -242,6 +241,7 @@ discordClient.on('message', async (msg) => {
             } else {
                 msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
             }
+            restartApp();
 
         }else if (msg.content.trim().toLowerCase() == _CMD_DEBUG) {
             console.log('toggling debug mode')
