@@ -169,6 +169,7 @@ const _CMD_DEBUG = PREFIX + 'debug';
 const _CMD_TEST = PREFIX + 'hello';
 const _CMD_LANG = PREFIX + 'lang';
 const _CMD_MIRROR = PREFIX + 'mirror';
+const _CMD_RESTART = PREFIX + 'restart';
 
 const guildMap = new Map();
 
@@ -198,8 +199,9 @@ discordClient.on('message', async (msg) => {
             }
         } else if (msg.content.trim().toLowerCase() == _CMD_HELP) {
             msg.reply(getHelpString());
-        }
-        else if (msg.content.trim().toLowerCase() == _CMD_DEBUG) {
+        }else if (msg.content.trim().toLowerCase() == _CMD_RESTART) {
+            console.log('restart triggered');
+        }else if (msg.content.trim().toLowerCase() == _CMD_DEBUG) {
             console.log('toggling debug mode')
             let val = guildMap.get(mapKey);
             if (val.debug)
