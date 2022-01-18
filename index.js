@@ -1,9 +1,10 @@
 //////////////////////////////////////////
 //////////////// LOGGING /////////////////
 //////////////////////////////////////////
+
 function getCurrentDateString() {
     return (new Date()).toISOString() + ' ::';
-};
+}
 __originalLog = console.log;
 console.log = function () {
     var args = [].slice.call(arguments);
@@ -19,6 +20,7 @@ const util = require('util');
 const path = require('path');
 const request = require('request');
 const { Readable } = require('stream');
+const Heroku = require('heroku-client')
 
 //////////////////////////////////////////
 ///////////////// VARIA //////////////////
@@ -62,21 +64,20 @@ const SETTINGS_FILE = 'settings.json';
 
 let DISCORD_TOK = null;
 let WITAPIKEY = null;
+let HEROKU_KEY = null;
 
 function loadConfig() {
     if (fs.existsSync(SETTINGS_FILE)) {
         const CFG_DATA = JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8'));
         DISCORD_TOK = CFG_DATA.discord_token;
         WITAPIKEY = CFG_DATA.wit_ai_token;
-        SPOTIFY_TOKEN_ID = CFG_DATA.spotify_token_id;
-        SPOTIFY_TOKEN_SECRET = CFG_DATA.spotify_token_secret;
+        HEROKU_KEY = CFG_DATA.heroku_key;
     } else {
         DISCORD_TOK = process.env.DISCORD_TOK;
         WITAPIKEY = process.env.WITAPIKEY;
-        SPOTIFY_TOKEN_ID = process.env.SPOTIFY_TOKEN_ID;
-        SPOTIFY_TOKEN_SECRET = process.env.SPOTIFY_TOKEN_SECRET;
+        HEROKU_KEY = process.env.HEROKU_KEY;
     }
-    if (!DISCORD_TOK || !WITAPIKEY)
+    if (!DISCORD_TOK || !WITAPIKEY || !HEROKU_KEY)
         throw 'Failed loading, missing API keys!'
 
 }
@@ -84,6 +85,35 @@ function loadConfig() {
 loadConfig()
 
 const https = require('https')
+
+function restartApp() {
+    const options = {
+        hostname: 'api.heroku.com',
+        path: '/apps/hawkinsr-speech-to-text/dynos',
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/vnd.heroku+json; version=3',
+            'Authorization': 'Bearer ' + HEROKU_KEY,
+        },
+    }
+
+    const req = https.request(options, (res) => {
+        res.setEncoding('utf8');
+        let body = ''
+        res.on('data', (chunk) => {
+            body += chunk
+        });
+        res.on('end', function () {
+            cb(JSON.parse(body))
+        })
+    })
+    req.on('error', (error) => {
+        console.error(error)
+        cb(null)
+    })
+    req.write(data)
+    req.end()
+}
 
 function listWitAIApps(cb) {
     const options = {
@@ -201,6 +231,18 @@ discordClient.on('message', async (msg) => {
             msg.reply(getHelpString());
         }else if (msg.content.trim().toLowerCase() == _CMD_RESTART) {
             console.log('restart triggered');
+            if (guildMap.has(mapKey)) {
+                let val = guildMap.get(mapKey);
+                if (val.voice_Channel) val.voice_Channel.leave()
+                if (val.voice_Connection) val.voice_Connection.disconnect()
+                if (val.musicYTStream) val.musicYTStream.destroy()
+                guildMap.delete(mapKey)
+                msg.reply("Please wait while I restart. I will leave the chat, and begin restarting. Please feel free to reinvite me whenever you like, I will resume functioning as soon as I am able.")
+                msg.reply("Disconnected.")
+            } else {
+                msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
+            }
+
         }else if (msg.content.trim().toLowerCase() == _CMD_DEBUG) {
             console.log('toggling debug mode')
             let val = guildMap.get(mapKey);
