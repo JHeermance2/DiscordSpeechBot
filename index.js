@@ -101,7 +101,10 @@ function restartApp() {
             console.error(error)
         })
         req.end()
+    })
 }
+
+
 
 function listWitAIApps(cb) {
     const options = {
