@@ -95,23 +95,12 @@ function restartApp() {
             'Authorization': 'Bearer ' + HEROKU_KEY,
         },
     }
-
     const req = https.request(options, (res) => {
         res.setEncoding('utf8');
-        let body = ''
-        res.on('data', (chunk) => {
-            body += chunk
-        });
-        res.on('end', function () {
-            cb(JSON.parse(body))
+        req.on('error', (error) => {
+            console.error(error)
         })
-    })
-    req.on('error', (error) => {
-        console.error(error)
-        cb(null)
-    })
-    req.write(data)
-    req.end()
+        req.end()
 }
 
 function listWitAIApps(cb) {
@@ -228,21 +217,6 @@ discordClient.on('message', async (msg) => {
             }
         } else if (msg.content.trim().toLowerCase() == _CMD_HELP) {
             msg.reply(getHelpString());
-        }else if (msg.content.trim().toLowerCase() == _CMD_RESTART) {
-            console.log('restart triggered');
-            if (guildMap.has(mapKey)) {
-                let val = guildMap.get(mapKey);
-                if (val.voice_Channel) val.voice_Channel.leave()
-                if (val.voice_Connection) val.voice_Connection.disconnect()
-                if (val.musicYTStream) val.musicYTStream.destroy()
-                guildMap.delete(mapKey)
-                msg.reply("Please wait while I restart. I will leave the chat, and begin restarting. Please feel free to reinvite me whenever you like, I will resume functioning as soon as I am able.")
-                msg.reply("Disconnected.")
-            } else {
-                msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
-            }
-            restartApp();
-
         }else if (msg.content.trim().toLowerCase() == _CMD_DEBUG) {
             console.log('toggling debug mode')
             let val = guildMap.get(mapKey);
@@ -275,6 +249,19 @@ discordClient.on('message', async (msg) => {
     } catch (e) {
         console.log('discordClient message: ' + e)
         msg.reply('Error#180: Something went wrong, try again or contact the developers if this keeps happening.');
+    }
+    if (msg.content.trim().toLowerCase() == _CMD_RESTART) {
+        console.log('restart triggered');
+        if (guildMap.has(mapKey)) {
+            let val = guildMap.get(mapKey);
+            if (val.voice_Channel) val.voice_Channel.leave()
+            if (val.voice_Connection) val.voice_Connection.disconnect()
+            guildMap.delete(mapKey)
+            msg.reply("Please wait while I restart. I will leave the chat, and begin restarting. Please feel free to reinvite me whenever you like, I will resume functioning as soon as I am able.")
+        } else {
+            msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
+        }
+        restartApp();
     }
 })
 
