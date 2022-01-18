@@ -190,7 +190,7 @@ const _CMD_DEBUG = PREFIX + 'debug';
 const _CMD_TEST = PREFIX + 'hello';
 const _CMD_LANG = PREFIX + 'lang';
 const _CMD_MIRROR = PREFIX + 'mirror';
-const _CMD_RESTART = PREFIX + 'restart';
+//const _CMD_RESTART = PREFIX + 'restart';
 
 const guildMap = new Map();
 
@@ -231,19 +231,20 @@ discordClient.on('message', async (msg) => {
             msg.reply('hello back =)')
         } else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_MIRROR) {
             msg.reply(msg.content.replace(_CMD_MIRROR, '').trim())
-        } else if (msg.content.trim().toLowerCase() == _CMD_RESTART) {
-            console.log('restart triggered');
-            if (guildMap.has(mapKey)) {
-                let val = guildMap.get(mapKey);
-                if (val.voice_Channel) val.voice_Channel.leave()
-                if (val.voice_Connection) val.voice_Connection.disconnect()
-                guildMap.delete(mapKey)
-                msg.reply("Please wait while I restart. I will leave the chat, and begin restarting. Please feel free to reinvite me whenever you like, I will resume functioning as soon as I am able.")
-            } else {
-                msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
-            }
-            restartApp();
         }
+        // else if (msg.content.trim().toLowerCase() == _CMD_RESTART) {
+        //     console.log('restart triggered');
+        //     if (guildMap.has(mapKey)) {
+        //         let val = guildMap.get(mapKey);
+        //         if (val.voice_Channel) val.voice_Channel.leave()
+        //         if (val.voice_Connection) val.voice_Connection.disconnect()
+        //         guildMap.delete(mapKey)
+        //         msg.reply("Please wait while I restart. I will leave the chat, and begin restarting. Please feel free to reinvite me whenever you like, I will resume functioning as soon as I am able.")
+        //     } else {
+        //         msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
+        //     }
+        //     restartApp();
+        // }
         else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_LANG) {
             const lang = msg.content.replace(_CMD_LANG, '').trim().toLowerCase()
             listWitAIApps(data => {
