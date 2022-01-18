@@ -220,19 +220,29 @@ discordClient.on('message', async (msg) => {
             }
         } else if (msg.content.trim().toLowerCase() == _CMD_HELP) {
             msg.reply(getHelpString());
-        }else if (msg.content.trim().toLowerCase() == _CMD_DEBUG) {
+        } else if (msg.content.trim().toLowerCase() == _CMD_DEBUG) {
             console.log('toggling debug mode')
             let val = guildMap.get(mapKey);
             if (val.debug)
                 val.debug = false;
             else
                 val.debug = true;
-        }
-        else if (msg.content.trim().toLowerCase() == _CMD_TEST) {
+        } else if (msg.content.trim().toLowerCase() == _CMD_TEST) {
             msg.reply('hello back =)')
-        }
-        else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_MIRROR) {
+        } else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_MIRROR) {
             msg.reply(msg.content.replace(_CMD_MIRROR, '').trim())
+        } else if (msg.content.trim().toLowerCase() == _CMD_RESTART) {
+            console.log('restart triggered');
+            if (guildMap.has(mapKey)) {
+                let val = guildMap.get(mapKey);
+                if (val.voice_Channel) val.voice_Channel.leave()
+                if (val.voice_Connection) val.voice_Connection.disconnect()
+                guildMap.delete(mapKey)
+                msg.reply("Please wait while I restart. I will leave the chat, and begin restarting. Please feel free to reinvite me whenever you like, I will resume functioning as soon as I am able.")
+            } else {
+                msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
+            }
+            restartApp();
         }
         else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_LANG) {
             const lang = msg.content.replace(_CMD_LANG, '').trim().toLowerCase()
@@ -253,19 +263,8 @@ discordClient.on('message', async (msg) => {
         console.log('discordClient message: ' + e)
         msg.reply('Error#180: Something went wrong, try again or contact the developers if this keeps happening.');
     }
-    if (msg.content.trim().toLowerCase() == _CMD_RESTART) {
-        console.log('restart triggered');
-        if (guildMap.has(mapKey)) {
-            let val = guildMap.get(mapKey);
-            if (val.voice_Channel) val.voice_Channel.leave()
-            if (val.voice_Connection) val.voice_Connection.disconnect()
-            guildMap.delete(mapKey)
-            msg.reply("Please wait while I restart. I will leave the chat, and begin restarting. Please feel free to reinvite me whenever you like, I will resume functioning as soon as I am able.")
-        } else {
-            msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
-        }
-        restartApp();
-    }
+
+    
 })
 
 function getHelpString() {
