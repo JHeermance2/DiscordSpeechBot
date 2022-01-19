@@ -1,16 +1,6 @@
 # DiscordSpeechBot
-A speech-to-text bot for discord with music commands and more written in NodeJS.
+A speech-to-text bot for discord written in NodeJS.
 
-## Demo:
-
-[![Discord Speech Bot Demo](http://img.youtube.com/vi/cfFI7E32v_8/0.jpg)](http://www.youtube.com/watch?v=cfFI7E32v_8 "Discord Speech Bot Demo")
-
-Try the bot for yourself on our Discord server: https://discord.gg/ApdTMG9
-
-You can follow the steps below to get this bot up and running.
-
-## Quick Install
-Video Tutorial: https://www.youtube.com/watch?v=y9OOM-c6nik
 
 ## Heroku
 If you don't have a linux server/machine then you can use Heroku for hosting your bot 24/7 and it's free.
@@ -18,32 +8,13 @@ Under "Resources" tab, use the "worker" deno type, and not the "web" one. You wi
 
 Tutorial: https://dev.to/codr/discord-ears-bot-on-heroku-4606
 
-## Docker
-If you prefer using Docker instead of manually installing it.
-Copy the `Dockerfile.sample` to `Dockerfile` and edit it.
-Near the bottom you have to provide API Credentials either using the `settings.json` file or setting the ENV variables.
-Refer to the settings section below for details on these.
-Once you've configured the Dockerfile you can build and run it:
-
-1. run `docker build -t discordspeechbot .`  this may take a minute or two.
-2. run `docker run -it discordspeechbot`
-3. Proceed to Usage section below.
-
 ## Installation
 You need nodeJS version 12+ with npm on your machine.
-Using shell or command prompt execute the following:
-```
-git clone https://github.com/healzer/DiscordSpeechBot.git
-cd DiscordSpeechBot
-npm install
-```
 
 ## Settings
 Create a (free) discord bot and obtain the API credentials (Bot Token).
 Here's an easy tutorial: https://www.writebots.com/discord-bot-token/
 Note: Give your bot enough permissions or simply grant it Administrator rights.
-
-Create a (free) Spotify developers account to obtain the API credentials (Client Id and Client Secret): https://developer.spotify.com/dashboard/
 
 Create a (free) WitAI account and obtain the API credentials (Server Access Token): https://wit.ai/
 
@@ -51,8 +22,6 @@ Rename the file `settings-sample.json` to `settings.json` and enter the obtained
 ```
 {
     "discord_token": "your_token",
-    "spotify_token_id": "your_token_id",
-    "spotify_token_secret": "your_token_secret",
     "wit_ai_token": "your_token"
 }
 ```
@@ -61,8 +30,6 @@ If you are using Digitalocean Apps, Heroku or another service you can also use E
 ```
 DISCORD_TOK
 WITAPIKEY
-SPOTIFY_TOKEN_ID
-SPOTIFY_TOKEN_SECRET
 ```
 
 ## Running
@@ -96,52 +63,14 @@ Examples:
 
 ### Voice commands
 
-When the bot is inside a voice channel it listens to all speech and tries to detect commands.
-
-Try saying:
-```
-music play 'the chemical brothers'
-music skip
-music play random
-music list
-music clear list
-```
-
-A successful voice command looks like this:
-
-`<long pause>   music play 'justin timberlake cry river'   <long pause>`
+When the bot is inside a voice channel it listens to all speech and tries to transcribe it to text.
 
 ### Notes: 
-- Each voice command starts with `music`.
-- Each user talks to a separate channel, the bot hears every user separately.
+- Each user talks to a separate channel, the bot hears every user separately, and will transcribe each user, tagging each transcribed line.
 - Only when your user picture turns green in the voice channel will the bot receive your audio.
 - A long pause interrupts the audio input.
-- (WitAI only) The duration of a single audio input is limited to 20 seconds, longer audio is not transcribed.
+- (WitAI only) The duration of a single audio input is limited to between 1 and 20 seconds, longer and shorter audio is not transcribed. generally, the break in speech for breathing is enough separation to give the bot enough time to process.
 
-Here are some examples which may not work (properly):
-```
-<talking> music skip
-music skip <talking>
-<talking> music skip <talking>
-...
-
-music play 'the chemical brothers' <talking>
-
-music <long silence>  play  <long silence> 'the chemical brothers'
-```
-
-
-### Notes:
-- A successful voice command should contain as little noise before and after the command.
-- A successful voice command should should not contain too many/long periods of silence, otherwise the bot will only receive separate words instead of the whole sentence.
-- `<long pause>` is usually between 1 and 2 seconds, long enough for discord to stop processing your audio input.
-- If you have a very sensitive microphone or a lot of (background) noise, then voice commands may not work properly for you.
-
-
-## For developers
-Music lagging or stuttering? [Try this](https://groovy.zendesk.com/hc/en-us/articles/360023031772-Laggy-Glitchy-Distorted-No-Audio)
-
-Using Mozilla DeepSpeech for speech recognition, [tutorial](https://medium.com/@ilyanevolin/discord-stt-bot-using-mozilla-deepspeech-e77ee28937eb).
 
 ## Language
 WitAI supports over 120 languages (https://wit.ai/faq), however only one language can be used at a time.
@@ -174,12 +103,4 @@ By default WitAI's free API is used for voice recognition / transcription. But y
 5. Create a new Service Account Key (or use existing) and download the json file.
 6. Put the json file inside your bot directory and rename it to `gspeech_key.json`.
 
-## Contact
-For enquiries or issues get in touch with me:
-
-Name: [Ilya Nevolin](https://www.linkedin.com/in/iljanevolin/)
-
-Email: ilja.nevolin@gmail.com
-
-Discord: https://discord.gg/ApdTMG9
 
