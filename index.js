@@ -63,20 +63,17 @@ const SETTINGS_FILE = 'settings.json';
 
 let DISCORD_TOK = null;
 let WITAPIKEY = null;
-let HEROKU_KEY = null;
 
 function loadConfig() {
     if (fs.existsSync(SETTINGS_FILE)) {
         const CFG_DATA = JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8'));
         DISCORD_TOK = CFG_DATA.discord_token;
         WITAPIKEY = CFG_DATA.wit_ai_token;
-        HEROKU_KEY = CFG_DATA.heroku_key;
     } else {
         DISCORD_TOK = process.env.DISCORD_TOK;
         WITAPIKEY = process.env.WITAPIKEY;
-        HEROKU_KEY = process.env.HEROKU_KEY;
     }
-    if (!DISCORD_TOK || !WITAPIKEY || !HEROKU_KEY)
+    if (!DISCORD_TOK || !WITAPIKEY)
         throw 'Failed loading, missing API keys!'
 
 }
@@ -84,27 +81,6 @@ function loadConfig() {
 loadConfig()
 
 const https = require('https')
-
-function restartApp() {
-    const options = {
-        hostname: 'api.heroku.com',
-        path: '/apps/hawkinsr-speech-to-text/dynos',
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/vnd.heroku+json; version=3',
-            'Authorization': 'Bearer ' + HEROKU_KEY,
-        },
-    }
-    const req = https.request(options, (res) => {
-        res.setEncoding('utf8');
-        req.on('error', (error) => {
-            console.error(error)
-        })
-        req.end()
-    })
-}
-
-
 
 function listWitAIApps(cb) {
     const options = {
@@ -232,19 +208,19 @@ discordClient.on('message', async (msg) => {
         } else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_MIRROR) {
             msg.reply(msg.content.replace(_CMD_MIRROR, '').trim())
         }
-        // else if (msg.content.trim().toLowerCase() == _CMD_RESTART) {
-        //     console.log('restart triggered');
-        //     if (guildMap.has(mapKey)) {
-        //         let val = guildMap.get(mapKey);
-        //         if (val.voice_Channel) val.voice_Channel.leave()
-        //         if (val.voice_Connection) val.voice_Connection.disconnect()
-        //         guildMap.delete(mapKey)
-        //         msg.reply("Please wait while I restart. I will leave the chat, and begin restarting. Please feel free to reinvite me whenever you like, I will resume functioning as soon as I am able.")
-        //     } else {
-        //         msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
-        //     }
-        //     restartApp();
-        // }
+        else if (msg.content.trim().toLowerCase() == _CMD_RESTART) {
+            console.log('restart triggered');
+            if (guildMap.has(mapKey)) {
+                let val = guildMap.get(mapKey);
+                if (val.voice_Channel) val.voice_Channel.leave()
+                if (val.voice_Connection) val.voice_Connection.disconnect()
+                guildMap.delete(mapKey)
+                msg.reply("Please wait while I restart. I will leave the chat, and begin restarting. Please feel free to reinvite me whenever you like, I will resume functioning as soon as I am able.")
+            } else {
+                msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
+            }
+            restartApp();
+        }
         else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_LANG) {
             const lang = msg.content.replace(_CMD_LANG, '').trim().toLowerCase()
             listWitAIApps(data => {
