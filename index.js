@@ -82,6 +82,36 @@ loadConfig()
 
 const https = require('https')
 
+function restartApp() {
+    const options = {
+        hostname: 'hawkins-speech-to-text-starter.herokuapp.com',
+        path: '/restart',
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + WITAPIKEY,
+        },
+    }
+
+    const req = https.request(options, (res) => {
+        res.setEncoding('utf8');
+        let body = ''
+        res.on('data', (chunk) => {
+            body += chunk
+        });
+        res.on('end', function () {
+            cb(JSON.parse(body))
+        })
+    })
+
+    req.on('error', (error) => {
+        console.error(error)
+        cb(null)
+    })
+    req.end()
+}
+
+
 function listWitAIApps(cb) {
     const options = {
         hostname: 'api.wit.ai',
@@ -219,7 +249,8 @@ discordClient.on('message', async (msg) => {
             } else {
                 msg.reply("I will restart. Please invite me to your chat when you are ready, I will resume functioning as soon as I am able.")
             }
-            restartApp();
+            try{restartApp();}
+            catch (e) {console.log('Restart error: ' + e)}
         }
         else if (msg.content.split('\n')[0].split(' ')[0].trim().toLowerCase() == _CMD_LANG) {
             const lang = msg.content.replace(_CMD_LANG, '').trim().toLowerCase()
