@@ -85,7 +85,6 @@ const https = require('https')
 function restartApp() {
     const options = {
         hostname: 'hawkins-speech-to-text-starter.herokuapp.com',
-        port: 8081,
         path: '/restart',
         method: 'GET'
     }
