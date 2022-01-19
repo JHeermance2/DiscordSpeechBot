@@ -192,7 +192,7 @@ const _CMD_DEBUG = PREFIX + 'debug';
 const _CMD_TEST = PREFIX + 'hello';
 const _CMD_LANG = PREFIX + 'lang';
 const _CMD_MIRROR = PREFIX + 'mirror';
-//const _CMD_RESTART = PREFIX + 'restart';
+const _CMD_RESTART = PREFIX + 'restart';
 
 const guildMap = new Map();
 
