@@ -85,16 +85,12 @@ const https = require('https')
 function restartApp() {
     const options = {
         hostname: 'hawkins-speech-to-text-starter.herokuapp.com',
+        port: 8081,
         path: '/restart',
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + WITAPIKEY,
-        },
+        method: 'GET'
     }
 
     const req = https.request(options, (res) => {
-        res.setEncoding('utf8');
         let body = ''
         res.on('data', (chunk) => {
             body += chunk
