@@ -84,7 +84,7 @@ const https = require('https')
 
 function restartApp() {
     const options = {
-        hostname: 'hawkins-speech-to-text-starter.herokuapp.com',
+        hostname: 'stt-restarter.herokuapp.com',
         path: '/restart',
         method: 'GET'
     }
